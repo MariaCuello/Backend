@@ -1,4 +1,4 @@
-const fs = require("fs");
+import fs from "fs";
 class ProductManager {
 
     constructor (path){
@@ -83,18 +83,6 @@ class ProductManager {
         }
     }
 }
-
-async function prueba(){
-    const productManager = new ProductManager("Productos.json");
-    console.log(await productManager.addProduct("camiseta", "description camiseta", 12.99, "url1", "1234", 100));
-    console.log(await productManager.addProduct("pantalon", "description pantalon", 24.99,"url2", "1235", 200));
-    console.log(await productManager.addProduct("zapato", "description zapato", 35, "url3", "1236", 1000));
-    console.log(await productManager.getProductbyId(1));
-    console.log(await productManager.getProductbyId(13));
-    console.log(await productManager.deleteProduct(2));
-    console.log(await productManager.updateProduct({id:1, titulo:"zapato mixto", descripcion:"description zapato", precio:56, thumbnail: "url3", codigo:"1236", stock:1000}));
-}
-prueba();
 
 
 export const productManager = new ProductManager("ProductsAPI.json");
