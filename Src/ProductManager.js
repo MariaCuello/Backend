@@ -5,30 +5,24 @@ class ProductManager {
         this.path = path;
     }
 
-    async addProduct (titulo, descripcion, precio, url, codigo, stock) {
+    async addProduct (obj) {
 
         const productos = await this.getProducts();
+        const id =  productos.length ? productos.length + 1 : 1;
+        let status = true;
 
-        const producto = {
-            id: productos.length ? productos.length + 1 : 1,
-            titulo: titulo,
-            descripcion: descripcion,
-            precio: precio,
-            thumbnail: url,
-            codigo: codigo,
-            stock: stock
-        };
-
-        if (!titulo && descripcion && precio && url && codigo && stock)
-            return "Faltan datos";
-        else if (productos.find ((event) => event.codigo === codigo))
-            return "El producto ya existe";
-        else if ((titulo && descripcion && precio && url && codigo && stock) && !productos.find ((event) => event.codigo === codigo)){
+        const producto = { id, status, ...obj};
+        console.log( productos.find ((event) => event.codigo === obj.codigo));
+            
+        if (!(obj.titulo && obj.descripcion && obj.precio && obj.codigo && obj.stock && obj.categoria))
+            return null;
+        else if (productos.find ((event) => event.codigo === obj.codigo))
+            return null;
+        else {
             productos.push(producto);
             await fs.promises.writeFile(this.path, JSON.stringify(productos));
-            return "Producto añadido correctamente";
+            return producto;
         }
-
     }
 
     async getProducts () {
@@ -68,16 +62,16 @@ class ProductManager {
         }
     }
 
-    async updateProduct (producto) {
+    async updateProduct (id, obj) {
         try {
             let productos = await this.getProducts();
-            if (!productos.find ((event) => event.id === producto.id)) 
-                return "Producto no encontrado";
-            await this.deleteProduct(producto.id);
-            productos = await this.getProducts();
-            productos.push(producto);
+            
+            const pos = productos.findIndex((item) => item.id === id);
+            if (pos === -1)
+                return "No encontrado";
+            productos[pos] = { ...productos[pos], ...obj };
             await fs.promises.writeFile(this.path, JSON.stringify(productos));
-            return "Product actualizado";
+            return "Producto actualizado";
         } catch (error) {
             return error;
         }
